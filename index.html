@@ -20,7 +20,7 @@ Use D3.js scales to map the range of the variable values (which can be arbitrary
   </p>
   <hr style="border: 1px solid #ccc; width: 90%; margin: 20px auto;">
   
-  <h3>Current var: 1</h3>
+  <h3 id="var-index">Current var: 1</h3>
   <svg width="500" height="400"></svg>
   <hr style="border: 1px solid #ccc; width: 90%; margin: 20px auto;">
   <h5>Author: Gianluca Farinaccio<br>Infovis course - 2024/2025</h5>
@@ -72,7 +72,7 @@ Use D3.js scales to map the range of the variable values (which can be arbitrary
           .attr("d", arc)
           .each(function(d) { this._current = d; }) // store the initial angles
           .merge(path)
-          .transition().duration(750)
+          .transition().duration(750) // transition duration in ms
           .attrTween("d", function(d) {
             const interpolate = d3.interpolate(this._current, d);
             this._current = interpolate(1);
@@ -80,12 +80,28 @@ Use D3.js scales to map the range of the variable values (which can be arbitrary
           });
 
         path.exit().remove();
+
+        const text = g.selectAll("text")
+          .data(arcs, d => d.data.id);
+
+        text.enter().append("text")
+          .attr("dy", "0.35em")
+          .attr("text-anchor", "middle")
+          .style("font-size", "12px")
+          .style("fill", "#fff")
+          .merge(text)
+          .transition().duration(750)
+          .attr("transform", d => `translate(${arc.centroid(d)})`)
+          .text(d => d.data[key].toFixed(0));  // mostra il valore della variabile corrente
+
+        text.exit().remove();
       };
 
       updatePie();
 
       svg.on("click", () => {
         currentVarIndex = (currentVarIndex + 1) % varKeys.length;
+        d3.select("#var-index").text(`Current var: ${currentVarIndex+1}`);
         updatePie();
       });
     });

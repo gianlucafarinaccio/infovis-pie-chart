@@ -8,5 +8,5 @@
   {"id": "Case 7", "var1": 10, "var2": 20, "var3": 90},
   {"id": "Case 8", "var1": 10, "var2": 10, "var3": 20},
   {"id": "Case 9", "var1": 10, "var2": 100, "var3": 10},
-  {"id": "Case 10", "var1": 10, "var2": 80, "var3": 100}
+  {"id": "Case 10", "var1": 100, "var2": 800, "var3": 100}
 ]
