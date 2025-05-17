@@ -1,0 +1,12 @@
+[
+  {"id": "Case 1", "var1": 10, "var2": 70, "var3": 50},
+  {"id": "Case 2", "var1": 10, "var2": 90, "var3": 40},
+  {"id": "Case 3", "var1": 10, "var2": 30, "var3": 60},
+  {"id": "Case 4", "var1": 10, "var2": 60, "var3": 80},
+  {"id": "Case 5", "var1": 10, "var2": 50, "var3": 30},
+  {"id": "Case 6", "var1": 10, "var2": 40, "var3": 70},
+  {"id": "Case 7", "var1": 10, "var2": 20, "var3": 90},
+  {"id": "Case 8", "var1": 10, "var2": 10, "var3": 20},
+  {"id": "Case 9", "var1": 10, "var2": 100, "var3": 10},
+  {"id": "Case 10", "var1": 10, "var2": 80, "var3": 100}
+]

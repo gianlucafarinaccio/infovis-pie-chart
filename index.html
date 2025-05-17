@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pie Chart - Gianluca Farinaccio</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body { font-family: sans-serif; text-align: center; }
+    svg { margin: auto; display: block; }
+  </style>
+</head>
+<body>
+  <h1>Interactive Pie Chart</h1>
+  <p style="padding-left: 50px;padding-right: 50px;">
+Create a JSON file with trivariate data: there are 10 data-cases, and each data-case has three quantitative variables whose values are all positive.
+Draw this dataset using a pie chart where the first quantitative variable is used to determine the angle of each pie slice (note: you need to create a proportion so that the total sum corresponds to 360°).
+When clicking with the left mouse button anywhere on the chart, the second variable is used instead of the first for all pie slices. Clicking again switches to the third variable. On the third click, it switches back to using the first variable, and so on, cycling through the three.
+Make sure the transitions are smooth and not abrupt.
+Use D3.js scales to map the range of the variable values (which can be arbitrary) to the range of visual dimensions (which depends on your interface).
+  </p>
+  <hr style="border: 1px solid #ccc; width: 90%; margin: 20px auto;">
+  
+  <h3>Current var: 1</h3>
+  <svg width="500" height="400"></svg>
+  <hr style="border: 1px solid #ccc; width: 90%; margin: 20px auto;">
+  <h5>Author: Gianluca Farinaccio<br>Infovis course - 2024/2025</h5>
+  <h5>Github repo: <a href="https://github.com/gianlucafarinaccio/infovis-pie-chart">https://github.com/gianlucafarinaccio/infovis-pie-chart</a></h5>
+  <script>
+    const svg = d3.select("svg"),
+          width = +svg.attr("width"),
+          height = +svg.attr("height"),
+          radius = Math.min(width, height) / 2;
+
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    const pie = d3.pie()
+      .sort(null)
+      .value(d => d.var1); // initial value accessor
+
+    const arc = d3.arc()
+      .innerRadius(0)
+      .outerRadius(radius - 10);
+
+    const g = svg.append("g")
+      .attr("transform", `translate(${width / 2},${height / 2})`);
+
+    let currentVarIndex = 0;
+    const varKeys = ["var1", "var2", "var3"];
+
+    // Load data
+    d3.json("data.json").then(data => {
+      // Set up value scale (to ensure proportionality and dynamic range)
+      const updateScale = (key) => {
+        const extent = d3.extent(data, d => d[key]);
+        return d3.scaleLinear().domain(extent).range(extent); // identity mapping
+      };
+
+      let valueScale = updateScale(varKeys[currentVarIndex]);
+
+      const updatePie = () => {
+        const key = varKeys[currentVarIndex];
+        valueScale = updateScale(key);
+
+        pie.value(d => valueScale(d[key]));
+        const arcs = pie(data);
+
+        const path = g.selectAll("path")
+          .data(arcs, d => d.data.id);
+
+        path.enter().append("path")
+          .attr("fill", (d, i) => color(i))
+          .attr("d", arc)
+          .each(function(d) { this._current = d; }) // store the initial angles
+          .merge(path)
+          .transition().duration(750)
+          .attrTween("d", function(d) {
+            const interpolate = d3.interpolate(this._current, d);
+            this._current = interpolate(1);
+            return t => arc(interpolate(t));
+          });
+
+        path.exit().remove();
+      };
+
+      updatePie();
+
+      svg.on("click", () => {
+        currentVarIndex = (currentVarIndex + 1) % varKeys.length;
+        updatePie();
+      });
+    });
+  </script>
+</body>
+</html>
